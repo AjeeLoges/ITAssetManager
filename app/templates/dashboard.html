@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="input-group" style="max-width: 420px;">
+        <span class="input-group-text">Search</span>
+        <input id="assetSearch" type="text" class="form-control" placeholder="Name, serial, location...">
+    </div>
+
+    <a href="{{ url_for('assets.create_asset') }}" class="btn btn-primary shadow-sm">
+        + Add Asset
+    </a>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card shadow-sm text-center p-3">
+            <h6>Total</h6>
+            <h3 class="fw-bold" id="statTotal">{{ total }}</h3>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm text-center p-3">
+            <h6>Active</h6>
+            <h3 class="text-success fw-bold" id="statActive">{{ active }}</h3>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm text-center p-3">
+            <h6>In Repair</h6>
+            <h3 class="text-warning fw-bold" id="statRepair">{{ in_repair }}</h3>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm text-center p-3">
+            <h6>Retired</h6>
+            <h3 class="text-danger fw-bold" id="statRetired">{{ retired }}</h3>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+
+        {% if assets|length == 0 %}
+            <div class="text-center text-muted py-5">
+                <h5 class="mb-2">No assets found</h5>
+                <p class="mb-0">Create your first asset to get started.</p>
+            </div>
+        {% else %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="assetTable">
+                <thead class="table-light">
+                    <tr>
+                        <th style="min-width: 180px;">Name</th>
+                        <th style="min-width: 140px;">Category</th>
+                        <th style="min-width: 180px;">Serial</th>
+                        <th style="min-width: 120px;">Status</th>
+                        <th style="min-width: 160px;">Location</th>
+                        <th style="min-width: 140px;">Owner</th>
+                        <th style="min-width: 180px;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for asset in assets %}
+                    <tr class="asset-row"
+                        data-name="{{ asset.name|lower }}"
+                        data-serial="{{ (asset.serial_number or '')|lower }}"
+                        data-location="{{ (asset.location or '')|lower }}"
+                        data-owner="{{ (asset.owner.username if asset.owner else '')|lower }}"
+                        data-status="{{ asset.status }}">
+
+                        <td class="fw-semibold">{{ asset.name }}</td>
+                        <td>{{ asset.category.name if asset.category else "" }}</td>
+                        <td>{{ asset.serial_number }}</td>
+                        <td>
+                            {% if asset.status == "active" %}
+                                <span class="badge bg-success">Active</span>
+                            {% elif asset.status == "in_repair" %}
+                                <span class="badge bg-warning text-dark">In Repair</span>
+                            {% else %}
+                                <span class="badge bg-danger">Retired</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ asset.location }}</td>
+                        <td>{{ asset.owner.username if asset.owner else "" }}</td>
+
+                        <td class="text-end">
+                            {% if asset.user_id == current_user.id or current_user.role == "admin" %}
+                                <a href="{{ url_for('assets.edit_asset', id=asset.id) }}" class="btn btn-sm btn-outline-primary">
+                                    Edit
+                                </a>
+
+                                <button type="button"
+                                        class="btn btn-sm btn-outline-danger"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#deleteModal{{ asset.id }}">
+                                    Delete
+                                </button>
+
+                                <div class="modal fade" id="deleteModal{{ asset.id }}" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Delete Asset</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+
+                                            <div class="modal-body text-start">
+                                                <p class="mb-1">
+                                                    Are you sure you want to delete <strong>{{ asset.name }}</strong>?
+                                                </p>
+                                                <p class="mb-0 text-muted">
+                                                    This action cannot be undone.
+                                                </p>
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                                    Cancel
+                                                </button>
+
+                                                <form method="post" action="{{ url_for('assets.delete_asset', id=asset.id) }}">
+                                                    <button type="submit" class="btn btn-danger">
+                                                        Yes, delete
+                                                    </button>
+                                                </form>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <span class="text-muted small">Read only</span>
+                            {% endif %}
+                        </td>
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div id="noResults" class="text-center text-muted py-5" style="display:none;">
+            <h5 class="mb-2">No matching assets</h5>
+            <p class="mb-0">Try a different search term.</p>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+<script>
+(function () {
+    const input = document.getElementById("assetSearch");
+    const rows = document.querySelectorAll(".asset-row");
+    const noResults = document.getElementById("noResults");
+
+    const statTotal = document.getElementById("statTotal");
+    const statActive = document.getElementById("statActive");
+    const statRepair = document.getElementById("statRepair");
+    const statRetired = document.getElementById("statRetired");
+
+    function updateStats(visibleRows) {
+        let total = visibleRows.length;
+        let active = 0, repair = 0, retired = 0;
+
+        visibleRows.forEach(r => {
+            const s = r.getAttribute("data-status");
+            if (s === "active") active++;
+            else if (s === "in_repair") repair++;
+            else if (s === "retired") retired++;
+        });
+
+        if (statTotal) statTotal.textContent = total;
+        if (statActive) statActive.textContent = active;
+        if (statRepair) statRepair.textContent = repair;
+        if (statRetired) statRetired.textContent = retired;
+    }
+
+    function filter() {
+        const q = (input.value || "").trim().toLowerCase();
+        let visible = [];
+
+        rows.forEach(row => {
+            const name = row.getAttribute("data-name") || "";
+            const serial = row.getAttribute("data-serial") || "";
+            const location = row.getAttribute("data-location") || "";
+            const owner = row.getAttribute("data-owner") || "";
+
+            const match = !q || name.includes(q) || serial.includes(q) || location.includes(q) || owner.includes(q);
+
+            row.style.display = match ? "" : "none";
+            if (match) visible.push(row);
+        });
+
+        if (noResults) {
+            noResults.style.display = (rows.length > 0 && visible.length === 0) ? "" : "none";
+        }
+
+        updateStats(visible);
+    }
+
+    if (input) {
+        input.addEventListener("input", filter);
+        filter();
+    }
+})();
+</script>
+
+{% endblock %}

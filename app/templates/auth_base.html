@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>IT Asset Manager</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+body { margin:0; font-family:"Segoe UI", sans-serif; }
+
+.login-bg {
+    background: linear-gradient(135deg, #1e293b, #334155);
+    min-height: 100vh;
+}
+
+.login-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 40px;
+    width: 420px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.30);
+}
+</style>
+</head>
+
+<body class="login-bg">
+
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="login-card">
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-warning">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+
+    </div>
+</div>
+
+</body>
+</html>

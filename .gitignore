@@ -1,0 +1,14 @@
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite
+*.sqlite3
+*.sql
+*.tar.gz
+.env
+instance/
+*.log
+.DS_Store

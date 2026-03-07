@@ -1,0 +1,41 @@
+{% extends "auth_base.html" %}
+
+{% block content %}
+
+<div class="text-center mb-4">
+    <h2 class="fw-bold">Welcome Back</h2>
+    <p class="text-muted mb-0">Sign in to continue</p>
+</div>
+
+<form method="post" novalidate>
+    {{ form.hidden_tag() }}
+
+    <div class="mb-3">
+        <label class="form-label">Username</label>
+        {{ form.username(class="form-control form-control-lg", placeholder="Username") }}
+        {% for error in form.username.errors %}
+            <div class="text-danger small mt-1">{{ error }}</div>
+        {% endfor %}
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Password</label>
+        {{ form.password(class="form-control form-control-lg", placeholder="Password") }}
+        {% for error in form.password.errors %}
+            <div class="text-danger small mt-1">{{ error }}</div>
+        {% endfor %}
+    </div>
+
+    <button type="submit" class="btn btn-dark w-100 btn-lg">
+        Login
+    </button>
+</form>
+
+<div class="text-center mt-3">
+    <small class="text-muted">
+        Don't have an account?
+        <a href="{{ url_for('auth.register') }}">Register</a>
+    </small>
+</div>
+
+{% endblock %}

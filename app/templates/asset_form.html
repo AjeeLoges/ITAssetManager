@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if asset %}Edit Asset{% else %}Add Asset{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-lg-7 col-xl-6">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+
+                <h3 class="fw-bold mb-4">
+                    {% if asset %}Edit Asset{% else %}Add Asset{% endif %}
+                </h3>
+
+                <form method="post" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        {{ form.name(class="form-control form-control-lg", placeholder="e.g. Laptop Dell XPS 13") }}
+                        {% for error in form.name.errors %}
+                            <div class="text-danger small mt-1">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Category</label>
+                        {{ form.category_id(class="form-select form-select-lg") }}
+                        {% for error in form.category_id.errors %}
+                            <div class="text-danger small mt-1">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Serial Number</label>
+                        {{ form.serial_number(class="form-control form-control-lg", placeholder="e.g. ABCD-1234-XYZ") }}
+                        {% for error in form.serial_number.errors %}
+                            <div class="text-danger small mt-1">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Status</label>
+                        {{ form.status(class="form-select form-select-lg") }}
+                        {% for error in form.status.errors %}
+                            <div class="text-danger small mt-1">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Location</label>
+                        {{ form.location(class="form-control form-control-lg", placeholder="e.g. Zurich Office") }}
+                        {% for error in form.location.errors %}
+                            <div class="text-danger small mt-1">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            Save
+                        </button>
+                        <a href="{{ url_for('assets.dashboard') }}" class="btn btn-outline-secondary btn-lg w-100">
+                            Cancel
+                        </a>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
