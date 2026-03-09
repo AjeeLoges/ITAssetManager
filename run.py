@@ -1,5 +1,4 @@
-from app import create_app, db
-from app.models import User, Asset
+from app import create_app
 
 app = create_app()
 

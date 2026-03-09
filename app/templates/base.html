@@ -15,28 +15,28 @@
 <div class="sidebar">
     <h5 class="text-white text-center mb-4">IT Asset Manager</h5>
 
-    <a href="{{ url_for('main.index') }}">
+    <a href="{{ url_for('assets.dashboard') }}">
         <i class="bi bi-speedometer2"></i> Dashboard
     </a>
 
-    <a href="{{ url_for('assets.index') }}">
+    <a href="{{ url_for('assets.dashboard') }}">
         <i class="bi bi-hdd-stack"></i> Assets
     </a>
 
-    <a href="{{ url_for('assets.create') }}">
+    <a href="{{ url_for('assets.create_asset') }}">
         <i class="bi bi-plus-circle"></i> Add Asset
     </a>
 
-    <a href="/api/assets" target="_blank">
+    <a href="{{ url_for('api.get_assets') }}" target="_blank">
         <i class="bi bi-code-slash"></i> API
     </a>
 
-    <a href="{{ url_for('main.edit_profile') }}">
+    <a href="{{ url_for('auth.profile') }}">
         <i class="bi bi-person-circle"></i> Profile
     </a>
 
     {% if current_user.is_authenticated and current_user.role == "admin" %}
-    <a href="#">
+    <a href="{{ url_for('auth.admin_users') }}">
         <i class="bi bi-people"></i> Users
     </a>
     {% endif %}

@@ -111,9 +111,6 @@ def change_password():
     return render_template("profile_password.html", form=form)
 
 
-# -------------------------
-# Admin: User Management
-# -------------------------
 
 @auth.route("/admin/users")
 @login_required
